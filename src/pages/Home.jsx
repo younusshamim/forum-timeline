@@ -1,14 +1,52 @@
-import { useEffect } from "react";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { onGetPosts, onGetUsers } from "../services";
+import PostCard from "../components/PostCard";
+import PageLoader from "../components/common/PageLoader";
+import ErrorMsg from "../components/common/ErrorMsg";
+import Header from "../components/Header";
 
 const Home = () => {
-  const [pageLoading, setPageLoading] = useState(true);
+  // use queries
+  const {
+    data: postsData,
+    isLoading: postsLoading,
+    error: postsError,
+  } = useQuery({
+    queryKey: ["posts"],
+    queryFn: onGetPosts,
+  });
+  const {
+    data: usersData,
+    isLoading: usersLoading,
+    error: usersError,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: onGetUsers,
+  });
 
-  useEffect(() => {
-    setPageLoading(false);
-  }, []);
+  // data
+  const posts = postsData?.data || [];
+  const postsDescending = posts.sort((a, b) => b.id - a.id);
+  const users = usersData?.data || [];
+  const loading = postsLoading || usersLoading;
 
-  return <div></div>;
+  if (loading) return <PageLoader />;
+  if (postsError || usersError)
+    return <ErrorMsg msg="An error has occurred." />;
+  if (posts.length === 0) return <ErrorMsg msg="No posts are available." />;
+
+  return (
+    <div className="bg-[#fafafa] p-10 flex flex-col items-center">
+      <div className="flex flex-col gap-3 w-[700px]">
+        <Header posts={posts} users={users} />
+
+        {postsDescending.map((post) => {
+          const targetUser = users.find((user) => user.id === post.userId);
+          return <PostCard key={post.id} post={post} user={targetUser} />;
+        })}
+      </div>
+    </div>
+  );
 };
 
 export default Home;
