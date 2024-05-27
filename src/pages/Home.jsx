@@ -36,8 +36,8 @@ const Home = () => {
   if (posts.length === 0) return <ErrorMsg msg="No posts are available." />;
 
   return (
-    <div className="bg-[#fafafa] p-10 flex flex-col items-center">
-      <div className="flex flex-col gap-3 w-[700px]">
+    <div className="bg-[#fafafa] p-5 md:p-10 flex flex-col items-center">
+      <div className="flex flex-col gap-3 w-full md:w-[700px]">
         <Header posts={posts} users={users} />
 
         {postsDescending.map((post) => {
