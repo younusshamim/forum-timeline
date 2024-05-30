@@ -28,6 +28,7 @@ const Home = () => {
   const posts = postsData?.data || [];
   const postsDescending = posts.sort((a, b) => b.id - a.id);
   const users = usersData?.data || [];
+  const userMap = new Map(users.map((user) => [user.id, user]));
   const loading = postsLoading || usersLoading;
 
   if (loading) return <PageLoader />;
@@ -41,7 +42,7 @@ const Home = () => {
         <Header posts={posts} users={users} />
 
         {postsDescending.map((post) => {
-          const targetUser = users.find((user) => user.id === post.userId);
+          const targetUser = userMap.get(post.userId);
           return <PostCard key={post.id} post={post} user={targetUser} />;
         })}
       </div>
